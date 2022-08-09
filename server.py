@@ -2,7 +2,7 @@ from flask import Flask, request, Response, g
 import sqlite3
 app = Flask(__name__)
 
-DB_URL = "D:/Projetos/ifbb-ranking/ranking-ifbbpro/ranking-ifbbpro/champsifbb.db"
+DB_URL = "champsifbb.db"
 
 @app.before_request
 def before_request():

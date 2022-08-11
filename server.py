@@ -1,5 +1,5 @@
 from flask import Flask, request, Response, g
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import sqlite3
 
 app = Flask(__name__)
@@ -21,7 +21,6 @@ def after_request(exception):
         print("Conexão encerrada")
 
 @app.route("/")
-@cross_origin()
 def ExibirRanking():
     query = """
         select atleta, sum(pontos) pontos_t from pontuacao p 

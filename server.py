@@ -18,7 +18,7 @@ def before_request():
 def after_request(exception):
     if g.conn is not None:
         g.conn.close()
-        print("Conexão encerrada")
+        print("Conexão encerrada!")
 
 @app.route("/")
 def ExibirRanking():

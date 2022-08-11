@@ -1,9 +1,13 @@
 from flask import Flask, request, Response, g
+from flask_cors import CORS, cross_origin
 import sqlite3
+
 app = Flask(__name__)
+cors = CORS(app)
+
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 DB_URL = "champsifbb.db"
-
 @app.before_request
 def before_request():
     print("Conectando ao banco")
@@ -17,6 +21,7 @@ def after_request(exception):
         print("Conexão encerrada")
 
 @app.route("/")
+@cross_origin()
 def ExibirRanking():
     query = """
         select atleta, sum(pontos) pontos_t from pontuacao p 

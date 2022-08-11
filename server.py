@@ -10,7 +10,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 DB_URL = "champsifbb.db"
 @app.before_request
 def before_request():
-    print("Conectando ao banco")
+    print("Conectando ao banco!")
     conn = sqlite3.connect(DB_URL)
     g.conn = conn
 

@@ -62,7 +62,7 @@ def ultimaAtualizacaoLeitura():
     query = """
         select data_atualizacao 
         from atualizacao a 
-        order by data_atualizacao desc limit 1;
+        order by id_atualizacao desc limit 1;
     """
 
     cursor = g.conn.execute(query)

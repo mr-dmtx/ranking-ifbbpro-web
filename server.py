@@ -21,6 +21,7 @@ def after_request(exception):
         print("Conexão encerrada!")
 
 @app.route("/")
+
 def ExibirRanking():
     query = """
         select atleta, sum(pontos) pontos_t from pontuacao p 
@@ -44,6 +45,21 @@ def ExibirRankingQuantidadeAtletas(top):
                     for row in cursor.fetchall()]
     return json
 
+@app.route("/ranking/ano/<year>")
+def RankingPorAno(year):
+    query = """
+        select atleta, 
+            sum(pontos) pontos 
+            from pontuacao p 
+            where p.evento like '{}%' 
+            group by atleta order by pontos desc;
+    """.format(year)
+
+    cursor = g.conn.execute(query)
+    json = [{'nome': row[0], 'pontos': row[1]}
+            for row in cursor.fetchall()]
+    return json
+
 @app.route("/atleta/<nomeAtleta>")
 def ExibirDesempenhoAtleta(nomeAtleta):
     query = """
@@ -56,6 +72,22 @@ def ExibirDesempenhoAtleta(nomeAtleta):
     json = [{'nome': row[0], 'posicao': row[1], 'categoria': row[2], 'evento': row[3]}
             for row in cursor.fetchall()]
     return json
+@app.route("/atleta/procurar/<nomeAtleta>")
+def ProcurarAtleta(nomeAtleta):
+    query = """
+            select atleta, 
+            sum(pontos) pontos,
+            categoria 
+            from pontuacao p 
+            where atleta like '%{}%' 
+            group by atleta order by pontos desc;
+        """.format(nomeAtleta)
+
+    cursor = g.conn.execute(query)
+    json = [{'nome': row[0], 'pontos': row[1], 'categoria': row[2]}
+            for row in cursor.fetchall()]
+    return json
+
 
 @app.route("/ultima-atualizacao")
 def ultimaAtualizacaoLeitura():

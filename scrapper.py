@@ -1,12 +1,9 @@
-from os import error, link
-from sqlite3.dbapi2 import Date
+from os import error
 from types import NoneType
 from bs4 import BeautifulSoup
 import requests
 import sqlite3
 import datetime
-import schedule
-import time
 
 connectionBd = sqlite3.connect("champsifbb.db", check_same_thread=False)
 

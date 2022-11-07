@@ -1,7 +1,7 @@
 from flask import Flask, request, Response, g
 from flask_cors import CORS
 import sqlite3
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
+#from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
 import scrapper
 from apscheduler.schedulers.background import BackgroundScheduler
 

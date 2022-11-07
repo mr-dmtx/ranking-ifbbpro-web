@@ -1,11 +1,23 @@
 from flask import Flask, request, Response, g
 from flask_cors import CORS
 import sqlite3
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
+import scrapper
+from apscheduler.schedulers.background import BackgroundScheduler
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(scrapper.main, 'interval', minutes=1)
+sched.start()
 
 app = Flask(__name__)
 cors = CORS(app)
 
-app.config['CORS_HEADERS'] = 'Content-Type'
+#app.config['CORS_HEADERS'] = 'Content-Type'
+#app.config['JWT_SECRET_KEY'] = "123"
+#jwt = JWTManager(app)
+
+#access_token = create_access_token(identity='daniel')
+
 
 DB_URL = "champsifbb.db"
 @app.before_request
@@ -21,7 +33,7 @@ def after_request(exception):
         print("Conexão encerrada!")
 
 @app.route("/")
-
+#@jwt_required
 def ExibirRanking():
     query = """
         select atleta, sum(pontos) pontos_t from pontuacao p 
@@ -47,6 +59,7 @@ def ExibirRankingQuantidadeAtletas(top):
 
 @app.route("/ranking/ano/<year>")
 def RankingPorAno(year):
+
     query = """
         select atleta, 
             sum(pontos) pontos 
@@ -56,8 +69,10 @@ def RankingPorAno(year):
     """.format(year)
 
     cursor = g.conn.execute(query)
+
     json = [{'nome': row[0], 'pontos': row[1]}
             for row in cursor.fetchall()]
+
     return json
 
 @app.route("/atleta/<nomeAtleta>")
@@ -71,7 +86,11 @@ def ExibirDesempenhoAtleta(nomeAtleta):
     cursor = g.conn.execute(query)
     json = [{'nome': row[0], 'posicao': row[1], 'categoria': row[2], 'evento': row[3]}
             for row in cursor.fetchall()]
-    return json
+    if(len(json) > 0):
+        return json
+    else:
+        json = [{'erro': 'Esse atleta não existe'}]
+        return json, 404
 @app.route("/atleta/procurar/<nomeAtleta>")
 def ProcurarAtleta(nomeAtleta):
     query = """
@@ -104,6 +123,7 @@ def ultimaAtualizacaoLeitura():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 #servidor heroku
 

@@ -5,8 +5,9 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, creat
 import scrapper
 from apscheduler.schedulers.background import BackgroundScheduler
 
+#rodar o scrapper
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(scrapper.main, 'interval', minutes=1)
+sched.add_job(scrapper.main, 'interval', weeks=1)
 sched.start()
 
 app = Flask(__name__)

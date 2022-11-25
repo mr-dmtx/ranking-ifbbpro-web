@@ -4,11 +4,13 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 import datetime
+from datetime import datetime
 
 connectionBd = sqlite3.connect("champsifbb.db", check_same_thread=False)
 
-
 def main():
+    if(verifyUpdate() == False):
+        return None
     for i in range(12):
         urlPageContestYear = "https://contests.npcnewsonline.com/contests/ifbb_{}/index.php".format(2011 + i)
         htmlPageContestYear = requests.get(urlPageContestYear).content
@@ -26,7 +28,7 @@ def main():
             if (len(verify) <= 0):
                 getContestsResults(urlContest)
 
-    dataAtualizacao = datetime.datetime.now();
+    dataAtualizacao = datetime.now()
     dataAtualizacaoFormatado = dataAtualizacao.strftime("%d/%m/%Y %H:%M:%S")
 
     connectionBd.execute("insert into atualizacao (data_atualizacao) values (?)", (dataAtualizacaoFormatado,))
@@ -82,6 +84,15 @@ def getContestsResults(urlContest):
         print("Site invalido", error);
         pass
 
+def verifyUpdate():
+    cursor = connectionBd.cursor()
+    lastUpdate = cursor.execute("select data_atualizacao from atualizacao a order by a.id_atualizacao desc limit 1;").fetchall()
+    lastUpdate = datetime.strptime(lastUpdate[0][0], "%d/%m/%Y %H:%M:%S").date()
+    difLastUpdateNow = datetime.now().date() - lastUpdate
+    if(difLastUpdateNow.days > 6 ):
+        return True
+    else:
+        return False
 
 main()
 

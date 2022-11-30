@@ -12,7 +12,7 @@ def token_required(f):
         if not token:
             return jsonify({'msg': 'Sem autorização'}), 401
         try:
-            if (check_user(request.authorization.username, request.authorization.username) is False):
+            if (check_user(request.authorization.username, request.authorization.password) is False):
                 return jsonify({'msg': 'Sem autorização'}), 401
             dados = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         except:
@@ -31,7 +31,6 @@ def auth():
 
 
 def check_user(username, password):
-    print(password)
     password_hash = hashlib.md5(password.encode())
     password = password_hash.hexdigest()
     query = """

@@ -1,4 +1,4 @@
-from flask import Flask, g
+from flask import Flask, g, jsonify
 import sqlite3
 import config
 from server import app
@@ -24,7 +24,7 @@ def ExibirRanking():
     cursor = g.conn.execute(query)
     json = [{'nome': row[0], 'pontos': row[1]}
                     for row in cursor.fetchall()]
-    return json
+    return jsonify(json)
 
 def ExibirRankingQuantidadeAtletas(top):
     query = """
@@ -35,7 +35,7 @@ def ExibirRankingQuantidadeAtletas(top):
     cursor = g.conn.execute(query)
     json = [{'nome': row[0], 'pontos': row[1]}
                     for row in cursor.fetchall()]
-    return json
+    return jsonify(json)
 
 def RankingPorAno(year):
 
@@ -52,7 +52,7 @@ def RankingPorAno(year):
     json = [{'nome': row[0], 'pontos': row[1]}
             for row in cursor.fetchall()]
 
-    return json
+    return jsonify(json)
 
 def ExibirDesempenhoAtleta(nomeAtleta):
     query = """
@@ -65,10 +65,10 @@ def ExibirDesempenhoAtleta(nomeAtleta):
     json = [{'nome': row[0], 'posicao': row[1], 'categoria': row[2], 'evento': row[3]}
             for row in cursor.fetchall()]
     if(len(json) > 0):
-        return json
+        return jsonify(json)
     else:
         json = [{'erro': 'Esse atleta não existe'}]
-        return json, 404
+        return jsonify(json), 404
 
 def ProcurarAtleta(nomeAtleta):
     query = """
@@ -83,7 +83,7 @@ def ProcurarAtleta(nomeAtleta):
     cursor = g.conn.execute(query)
     json = [{'nome': row[0], 'pontos': row[1], 'categoria': row[2]}
             for row in cursor.fetchall()]
-    return json
+    return jsonify(json)
 
 
 def ultimaAtualizacaoLeitura():
@@ -96,7 +96,7 @@ def ultimaAtualizacaoLeitura():
     cursor = g.conn.execute(query)
     json = [{"data": row[0]} for row in cursor.fetchall()]
 
-    return json
+    return jsonify(json)
 
 
 #servidor heroku

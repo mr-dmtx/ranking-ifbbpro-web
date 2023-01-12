@@ -1,8 +1,11 @@
-from flask import Flask, g, jsonify
+from flask import Flask, g, jsonify, make_response
 import sqlite3
 import config
+from flask_cors import CORS
 from server import app
 
+
+CORS(app, resources={r"/*": {"origins": "*"}})
 @app.before_request
 def before_request():
     print("Conectando ao banco!")
@@ -10,10 +13,11 @@ def before_request():
     g.conn = conn
 
 @app.teardown_request #executado final da requisicao
-def after_request(exception):
+def after_request(response):
     if g.conn is not None:
         g.conn.close()
         print("Conexão encerrada!")
+    return response
 
 def ExibirRanking():
     query = """

@@ -60,10 +60,10 @@ def RankingPorAno(year):
 
 def ExibirDesempenhoAtleta(nomeAtleta):
     query = """
-            select p.posicao_atleta_nome nome, p.posicao_lugar posicao, c.categoria_nome categoria, s.show_nome evento from show s 
+            select p.posicao_atleta_nome nome, p.posicao_lugar posicao, c.categoria_nome categoria, SUBSTRING(s.show_data, -4)||" "|| s.show_nome evento from show s 
             inner join categoria c on c.categoria_show = s.show_id 
             inner join posicao p on p.posicao_categoria = c.categoria_id 
-            where posicao_atleta_nome like '{}';
+            where posicao_atleta_nome like '{}' order by evento desc;
         """.format(nomeAtleta)
     cursor = g.conn.execute(query)
     json = [{'nome': row[0], 'posicao': row[1], 'categoria': row[2], 'evento': row[3]}

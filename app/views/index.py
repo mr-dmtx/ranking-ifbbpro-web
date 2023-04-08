@@ -21,7 +21,7 @@ def after_request(response):
 
 def ExibirRanking():
     query = """
-        select atleta, sum(pontos) pontos_t from pontuacao p 
+        select atleta, round(sum(pontos)) pontos_t from pontuacao p 
         group by atleta
          order by pontos_t desc limit 100;
     """
@@ -77,7 +77,7 @@ def ExibirDesempenhoAtleta(nomeAtleta):
 def ProcurarAtleta(nomeAtleta):
     query = """
             select atleta, 
-            sum(pontos) pontos,
+            round(sum(pontos)) pontos,
             categoria 
             from pontuacao p 
             where atleta like '%{}%' 

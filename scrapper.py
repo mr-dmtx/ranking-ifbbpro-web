@@ -3,16 +3,15 @@ from types import NoneType
 from bs4 import BeautifulSoup
 import requests
 import sqlite3
-import datetime
 from datetime import datetime
 
 connectionBd = sqlite3.connect("champsifbb.db", check_same_thread=False)
 
 def main():
-    if(verifyUpdate() == False):
+    if(verifyUpdate() != False):
         return None
-    for i in range(12):
-        urlPageContestYear = "https://contests.npcnewsonline.com/contests/ifbb_{}/index.php".format(2011 + i)
+    for i in range(datetime.now().year - 2010):
+        urlPageContestYear = "https://contests.npcnewsonline.com/contests/{}/ifbb".format(2011 + i)
         htmlPageContestYear = requests.get(urlPageContestYear).content
         soupPageContestYear = BeautifulSoup(htmlPageContestYear, 'html.parser')
         linksContests = soupPageContestYear.find("div", class_="contest-listing")
@@ -20,7 +19,7 @@ def main():
         for j in linksContests.find_all('a', href=True):
             linkContest = j['href']
 
-            urlContest = "https://contests.npcnewsonline.com/" + linkContest[6:]
+            urlContest = linkContest+"/"
 
             cursor = connectionBd.cursor()
             verify = cursor.execute("select show_id from show where show_url like ?", (urlContest,)).fetchall()
@@ -53,7 +52,7 @@ def getContestsResults(urlContest):
 
         print(nomeChamp.text)
         connectionBd.execute("insert into show (show_nome, show_data, show_url) values (?, ?, ?)",
-                             (nomeChamp.text, dateChamp.text, urlContest))
+                             (nomeChamp.text, convertDateChampToNumeric(dateChamp.text), urlContest))
         connectionBd.commit()
         print("Carregando Resultados...")
         for categoria in categorias:
@@ -93,6 +92,11 @@ def verifyUpdate():
         return True
     else:
         return False
+
+def convertDateChampToNumeric(dateChamp):
+    dateObj = datetime.strptime(dateChamp, '%B %d, %Y')
+    dateNumeric = dateObj.strftime('%Y-%m-%d')
+    return dateNumeric
 
 main()
 

@@ -73,14 +73,21 @@ def getContestsResults(urlContest):
                         if (len(atleta.text) > 0):
                             if (atleta.text.find("Comparisons") == -1):
                                 if (atleta.text.find("Awards") == -1):
+                                    atletaNome = atleta.text
+                                    if atletaNome[0] == " ":
+                                        atletaNome = atletaNome[5:]
+                                    if atletaNome[len(atletaNome) - 1] == " ":
+                                        atletaNome = atletaNome[0:len(atletaNome) - 1]
+                                        if atletaNome[0] == " ":
+                                            atletaNome = atletaNome[1:]
                                     connectionBd.execute(
                                         "insert into posicao (posicao_lugar, posicao_categoria, posicao_atleta_nome) values (?, (select c.categoria_id from show s inner join categoria c on c.categoria_show = s.show_id where s.show_url like ? order by c.categoria_id desc), ?)",
-                                        (posicao if posicao <= 16 else 16, urlContest, atleta.text.replace("  ", " ")))
+                                        (posicao if posicao <= 16 else 16, urlContest, atletaNome))
                                     connectionBd.commit()
                                     posicao += 1
         print("Finalizado")
     except:
-        print("Site invalido", error);
+        print("Site invalido", error)
         pass
 
 def verifyUpdate():
